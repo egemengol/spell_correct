@@ -1,0 +1,5 @@
+__pycache__
+.mypy_cache
+.vscode
+simple.txt
+smooth.txt
