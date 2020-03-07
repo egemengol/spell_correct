@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from spell import Spell
 from pathlib import Path
 import fileinput
