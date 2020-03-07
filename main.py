@@ -7,10 +7,10 @@ from argparse import ArgumentParser
 from typing import List
 
 def main(
-    corpus: Path = Path("corpus.txt"),
+    corpus: Path = Path("./data/corpus.txt"),
     prob_type: str = "smooth",
     files: List[str] = [],
-    spell_errors: Path = Path("spell-errors.txt"),
+    spell_errors: Path = Path("./data/spell-errors.txt"),
 ):
     speller = Spell(
         corpus=corpus,
@@ -40,14 +40,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "-corpus",
         type=Path,
-        default="corpus.txt",
-        help="When you want to change the corpus.",
+        default="./data/corpus.txt",
+        help="When you want to change the corpus file.",
     )
     parser.add_argument(
         "-spell-errors",
         type=Path,
-        default="spell-errors.txt",
-        help="When you want to change the spell-errors.txt.",
+        default="./data/spell-errors.txt",
+        help="When you want to change the spell-errors file.",
     )
     args = parser.parse_args()
 

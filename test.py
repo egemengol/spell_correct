@@ -14,7 +14,7 @@ class MisCorrection(NamedTuple):
 		return f"{self.input:<16} ❌ {self.correction:<16} ✔ {self.supposed}"
 
 
-def case_generator(misspells="test-words-misspelled.txt", corrects="test-words-correct.txt"):
+def case_generator(misspells="./data/test-words-misspelled.txt", corrects="./data/test-words-correct.txt"):
 	with open(misspells, "r") as m:
 		with open(corrects, "r") as c:
 			while True:
@@ -30,7 +30,7 @@ def test(simple_or_smooth):
 		"python",
 		"main.py",
 		simple_or_smooth,
-		"test-words-misspelled.txt",
+		"./data/test-words-misspelled.txt",
 	],
 		capture_output=True,
 		check=True,
