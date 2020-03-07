@@ -35,7 +35,7 @@ if __name__ == "__main__":
         "files",
         metavar='FILE',
         nargs='*',
-        help="Files to read. If empty, stdin is used."
+        help="Files to read and correct, line by line. If empty, stdin is used."
     )
     parser.add_argument(
         "-corpus",

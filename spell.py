@@ -1,7 +1,6 @@
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
-import pickle
 from typing import Optional, Tuple, DefaultDict, Set
 import random
 from sys import stderr
