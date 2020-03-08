@@ -15,6 +15,7 @@ The recommended way to use is using stdin and stdout.
 
 `simple` or `smooth` explicit choice is left to the user, `smooth` refers to 'Laplacian smoothing'.
 
+This is how you can use the program:
 ```terminal
 $ python3 main.py -corpus ./data/corpus.txt -spell-errors ./data/spell-errors.txt simple < ./data/test-words-misspelled.txt > output.txt
 ```
@@ -54,6 +55,11 @@ For INSERT and DELETE, gives '_' for x if start of the word.
 
 Accuracy measures are calculated for both correct or incorrect suggestions,
 and with which method they have been suggested.
+
+First, run this for installing dependencies `numpy` and `pandas`:
+```terminal
+$ pip3 install -r requirements.txt
+```
 
 To take all the measurements, run:
 ```terminal
