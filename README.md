@@ -10,6 +10,8 @@ Two python executables are `main.py` and `measure.py`, both providing useful `--
 
 You can also read [the report](./pdfs/report.pdf).
 
+[GitHub link](https://github.com/egemengol/spell_correct)
+
 ## Usage
 The recommended way to use is using stdin and stdout. 
 
