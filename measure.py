@@ -109,7 +109,7 @@ def confusions(corrections: List[Tuple[str, str]]) -> Dict[Operation, pd.DataFra
 	return matrices
 
 
-def accuracy_set(corrections: List[Tuple[str, str, Set[str]]]) -> Dict[bool, Dict[str, int]]:
+def accuracy_set(corrections: List[Tuple[str, str, Set[str]]]):
 	"""
 	For accuracy parameters.
 	"""
@@ -124,9 +124,13 @@ def accuracy_set(corrections: List[Tuple[str, str, Set[str]]]) -> Dict[bool, Dic
 			"table": 0,
 			"no_op": 0,
 		},
+		None: 0,
 	}
 
 	for user, system, references in corrections:
+		if system == "":
+			counts[None] += 1
+			continue
 		op, _, _ = operation(user, system)
 		d = counts[system in references]
 		if op == Operation.TABLE:
@@ -154,9 +158,13 @@ def accuracy(corrections: List[Tuple[str, str, str]]) -> Dict[bool, Dict[str, in
 			"table": 0,
 			"no_op": 0,
 		},
+		None: 0,
 	}
 
 	for user, system, ref in corrections:
+		if system == "":
+			counts[None] += 1
+			continue
 		op, _, _ = operation(user, system)
 		d = counts[system == ref]
 		if op == Operation.TABLE:
@@ -254,7 +262,7 @@ def measure_spell_errors(
 
 	with open(out_dir_path / f"spellerrors_{smooth_type}_accuracy.json", "w") as f:
 		acc = accuracy_set(corrections)
-		json.dump(acc, f, sort_keys=True, indent=2)
+		json.dump(acc, f, indent=2)
 
 
 def get_user_refs_from_test_set(misspell_path: Path, correct_path: Path) -> List[Tuple[str, str]]:
@@ -297,7 +305,7 @@ def measure_test_set(
 
 	with open(out_dir_path / f"testset_{smooth_type}_accuracy.json", "w") as f:
 		acc = accuracy(corrections)
-		json.dump(acc, f, sort_keys=True, indent=2)
+		json.dump(acc, f, indent=2)
 
 
 def measure(

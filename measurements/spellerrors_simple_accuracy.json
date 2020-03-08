@@ -1,0 +1,13 @@
+{
+  "true": {
+    "edit": 22735,
+    "table": 11176,
+    "no_op": 17
+  },
+  "false": {
+    "edit": 879,
+    "table": 0,
+    "no_op": 2316
+  },
+  "null": 0
+}
