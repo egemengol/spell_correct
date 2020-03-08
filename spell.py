@@ -7,12 +7,19 @@ from sys import stderr
 
 random.seed(17)
 
-DEBUG = False
-
 
 class Spell:
+    # Smoothing variable
     alpha = 1
+
+    # Weighing the spell-errors and corpus.
+    # Determined by hand regarding the test set.
     ERROR_COEFFICIENT = 30
+
+    # Using the spell-errors corrections in the corpus
+    # in a weighted manner.
+    # ~8k words!
+    SPELL_ERROR_TRUST = 3
 
     def __init__(self, corpus: Path, prob_type: str, spell_errors: Path):
         self.prepare_corpus(corpus, prob_type)
@@ -22,17 +29,23 @@ class Spell:
         self.f = self.P_simple if prob_type.lower() == "simple" else self.P_smooth
 
     def prepare_corpus(self, corpus: Path, prob_type: str):
+        """Read the corpus file, count every token."""
         self.words = Counter(
             re.findall(r'\w+', open(corpus).read().lower()))
+        # corpus size
         self.N = float(sum(self.words.values()))
+        # used for size in smoothing
         self.Nplus = self.N + self.alpha * (len(self.words)+1)
 
+        # for using the spell-errors corrections in the corpus.
         if hasattr(self, "errors"):
             for v_l in self.errors.values():
                 for v in v_l:
-                    self.words[v] += 1
+                    self.words[v] += self.SPELL_ERROR_TRUST
 
     def prepare_spell_error_dict(self, path: Path):
+        """Read the spell-error file,
+        keep them in their counters for every misspelled word."""
         self.errors: DefaultDict[Counter] = defaultdict(Counter)
         self.N_error: float = 0
 
@@ -50,19 +63,22 @@ class Spell:
         for v_l in self.errors.values():
             for v in v_l:
                 count += 1
+                # for using the spell-errors corrections in the corpus.
                 if hasattr(self, "words"):
-                    self.words[v] += 1
+                    self.words[v] += self.SPELL_ERROR_TRUST
 
         self.N_error = float(count)
 
     def P_simple(self, word): 
-        "Probability of `word`."
+        """Probability of `word`."""
         return self.words[word] / self.N
 
     def P_smooth(self, word):
+        """Smoothed probability of `word`"""
         return (self.words[word] + self.alpha) / self.Nplus
 
     def max_from_corpus(self, word) -> Optional[Tuple[str, float]]:
+        """Best suggestion and its probability from corpus."""
         candids = self.candidates(word)
         if not candids:
             return "", 0
@@ -75,30 +91,28 @@ class Spell:
                 cur_max_prob = cur_prob
         return random.choice(list(maxes)), cur_max_prob
 
+    def max_from_spell_errors(self, word) -> Optional[Tuple[str, float]]:
+        """Best suggestion and its probability from spell-errors."""
+        spelling_error_counter = self.errors[word]
+        spelling_common = spelling_error_counter.most_common(1)
+        if spelling_common:
+            maxes = [(key, value) for key, value in spelling_error_counter.items() if value == spelling_common[0][1]]
+            key, value = random.choice(maxes)
+            value /= self.N_error
+            value = value * self.ERROR_COEFFICIENT
+        else:
+            key, value = "", 0
+        return key, value
+
     def correct(self, word): 
-        "Most probable spelling correction for word."
+        """Most probable spelling correction for word."""
 
         is_word_known = word in self.words
         if is_word_known:
             return word
 
-        spelling_error_counter = self.errors[word]
-        spelling_common = spelling_error_counter.most_common(1)
-        if spelling_common:
-            key, value = spelling_common[0]
-            value /= self.N_error
-            value = value * self.ERROR_COEFFICIENT
-        else:
-            key, value = "", 0
-
         best_word, prob = self.max_from_corpus(word)
-
-        if key != best_word and DEBUG and (value != 0 and prob != 0):
-            print(f"\n{word}", file=stderr)
-            print(f"Corpus says: {best_word}, {prob*10**5:.6f}", file=stderr)
-            spelling_common = spelling_error_counter.most_common(1)
-            if spelling_common:
-                print(f"Errors say:  {key}, {value*10**5:.6f}", file=stderr)
+        key, value = self.max_from_spell_errors(word)
 
         if prob > value:
             return best_word

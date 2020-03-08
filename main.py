@@ -1,24 +1,10 @@
 #!/usr/bin/env python3
 
-from spell import Spell
 from pathlib import Path
 import fileinput
 from argparse import ArgumentParser
-from typing import List
 
-def main(
-    corpus: Path = Path("./data/corpus.txt"),
-    prob_type: str = "smooth",
-    files: List[str] = [],
-    spell_errors: Path = Path("./data/spell-errors.txt"),
-):
-    speller = Spell(
-        corpus=corpus,
-        prob_type=prob_type,
-        spell_errors=spell_errors)
-
-    for line in fileinput.input(files):
-        print(speller.correct(line.rstrip()))
+from spell import Spell
 
 
 if __name__ == "__main__":
@@ -51,9 +37,10 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    main(
+    speller = Spell(
         corpus=args.corpus,
         prob_type=args.prob_type,
-        files=args.files,
-        spell_errors=args.spell_errors,
-    )
+        spell_errors=args.spell_errors)
+
+    for line in fileinput.input(args.files):
+        print(speller.correct(line.rstrip()))
